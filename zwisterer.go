@@ -36,6 +36,6 @@ func (z *Zwisterer) TweetRandomLorem() {
 
 func main() {
 	zwisterer := MakeZwisterer()
-	//zwisterer.Tweet("yes thanks.")
-	zwisterer.TweetRandomLorem()
+	//zwisterer.TweetRandomLorem()
+	zwisterer.Tweet("good nite")
 }
