@@ -1,9 +1,9 @@
 import wikipedia
 import tweepy
 import random
+import time
 
 class Zwisterer:
-    'a zwisterer'
 
     def __init__(self, name):
         self.auth = tweepy.OAuthHandler(
@@ -31,7 +31,12 @@ class Zwisterer:
         self.tweet(tweet)
 
     def thinkAbout(self, aTopic):
-        page = wikipedia.page(aTopic).content
+        try:
+            page = wikipedia.page(aTopic).content
+        except:
+            self.thinkAbout(aTopic)
+            return
+        print self.name + " is thinking about " + aTopic + "."
         sentences = page.split(". ")
         tweet = sentences[random.randint(0, len(sentences)-1)] + "."
         while self.isOverXChars(tweet, 140):
@@ -42,13 +47,13 @@ class Zwisterer:
         topic = wikipedia.random(pages=1)
         return self.thinkAbout(topic)
 
-    def thinkAboutSomethingRandomThanContains(self, thought, int):
+    def thinkAboutSomethingRandomThatContains(self, thought, int):
         print int
         topic = wikipedia.random(pages=1)
         try:
             content = wikipedia.page(topic).content
         except:
-            self.thinkAboutSomethingRandomThanContains(thought, (int+1))
+            self.thinkAboutSomethingRandomThatContains(thought, (int+1))
             return
         if thought in content:
             sentences = content.split(". ")
@@ -57,10 +62,20 @@ class Zwisterer:
                     if thought in sentence:
                         self.tweet(sentence)
                         return
-        self.thinkAboutSomethingRandomThanContains(thought, (int+1))
+        self.thinkAboutSomethingRandomThatContains(thought, (int+1))
 
     def isOverXChars(self, tweet, x):
         return (len(tweet) > x)
+
+    def isTitle(self, tweet):
+        if "==" in tweet:
+            return True
+        return False
+
+    def isMeaningless(self, tweet):
+        if (("==" in tweet) | ("ISBN" in tweet) | ("*" in tweet)):
+            return True
+        return False
 
     def getFollowers(self):
         followers = []
@@ -75,9 +90,15 @@ class Zwisterer:
             self.tweetToUserAbout(user, topic)
         return
 
+    def tweetToUserAboutSomethingRandom(self, user):
+        tweet = self.thinkAboutSomethingRandom()
+        if not self.tweetToUser(user, tweet):
+            self.tweetToUserAboutSomethingRandom(user)
+        return
+
     def tweetToUser(self, user, tweet):
         maxTweetlength = 137 - len(user.screen_name)
-        if self.isOverXChars(tweet, maxTweetlength):
+        if (self.isOverXChars(tweet, maxTweetlength) | self.isMeaningless(tweet)):
             return False
         newTweet = "@" + user.screen_name + ": " + tweet
         self.tweet(newTweet)
@@ -86,6 +107,12 @@ class Zwisterer:
     def showFollowers(self):
         for follower in self.followers:
             print follower.screen_name
+
+    def introduceYourself(self):
+        print "Hi! I am " + self.name + ", your new zwisterer!"
+        print "I will now do my thing."
+        print "To stop me from doing so just press ctrl-d"
+        print " "
 
     def myConsumerkey(self):
         return "2BVnyuOwELvw6tHYhEUFDCphF"
@@ -100,15 +127,15 @@ class Zwisterer:
         return "fraffLzrJActUqVHBXGST8GxYtZesjpC25Db85PYcY7dC"
 
 
-z = Zwisterer("zwisterer")
+z = Zwisterer("Zwakke")
+z.introduceYourself()
 # wikipedia.set_lang("en")
-# z.thinkAboutSomethingRandom()
-wikipedia.set_lang("de")
-# z.thinkAboutSomethingRandom()
+wikipedia.set_lang("en")
 # wikipedia.set_lang("fr")
-# # z.thinkAboutSomethingRandom()
-# z.thinkAboutSomethingRandomThanContains("thanks", 0)
-user = z.followers[0]
-z.tweetToUserAbout(user, "Friedrich Nietzsche")
 
-# z.tweet(tweet)
+while(True):
+    # follower = z.followers[random.randint(0, len(z.followers)-1)]
+    # z.tweetToUserAboutSomethingRandom(follower)
+    z.tweetAboutSomethingRandom()
+    print " "
+    time.sleep(5)
