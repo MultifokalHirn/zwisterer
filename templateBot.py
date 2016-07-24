@@ -25,7 +25,7 @@ class TemplateBot:
 
     def tweet(self, tweet):
         self.api.update_status(tweet)
-        print u'\u2709'
+        # print u'\u2709'
 
     def tweetAndPrint(self, tweet):
         self.tweet(tweet)
@@ -156,7 +156,6 @@ class TemplateBot:
 
     def sleepForXseconds(self, x):
         for i in range(x):
-            print i,
             time.sleep(1)
         else:
             print
